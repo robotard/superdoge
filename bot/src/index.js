@@ -1,5 +1,5 @@
 const PLAN = "Our plan is simple: build a fun community around $SDOGE, share the project, and grow the pack together. We’re live on pump.fun, with an airdrop planned soon. More details coming!";
-const INFO = `Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\n${PLAN}\n\nProject website: https://superdoge.co\nBuy $SDOGE: https://pump.fun/coin/DgkioUBM3Byw2SHS2344RGu8ZmczPuX2ndqMDUcVTGvJ\nTelegram community: https://t.me/superdogecommunity`;
+const INFO = `Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\n${PLAN}\n\nProject website: https://superdoge.co\nBuy $SDOGE: https://pump.fun/coin/E3MBfjKs8UNkyfNJteKTEN1Kcc8cdfTpTSdasGfJpump\nTelegram community: https://t.me/superdogecommunity`;
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 function commandOf(text = "") {
