@@ -19,7 +19,7 @@
 <div class="file"><code>bot/README.md</code><span class="muted">Short technical notes for the bot backend.</span></div>
 </section>
 <section><h2>Our actions, in order</h2><ol>
-<li><b>Merge the PR.</b> Cloudflare Pages should publish the new <code>/setup/</code> page through its existing GitHub connection. The current homepage remains as it is.</li>
+<li><b>Merge the PR.</b> Cloudflare Pages should publish the new <code>/docs/</code> page through its existing GitHub connection. The current homepage remains as it is.</li>
 <li><b>Get the @SuperDogeAgent bot token.</b> If @SuperDogeAgent already exists, use that bot and its token. If it still needs creating, create it with <a href="https://t.me/BotFather">@BotFather</a>. Save the token privately. Never put the token in GitHub.</li>
 <li><b>Create or open the Telegram group “Super Doge Community.”</b> Add <a href="https://t.me/SuperDogeAgent">@SuperDogeAgent</a> to the group. In BotFather, use <code>/setjoingroups</code> to allow group use and <code>/setcommands</code> to add the commands below. Leave group privacy on; the bot only needs commands and welcome events. Pin the bot link in the group so members can open its private chat.</li>
 <li><b>Create the wallet database.</b> In Cloudflare, create a D1 database named <code>superdoge-airdrop</code>. Copy its database ID into <code>bot/wrangler.jsonc</code>, replacing <code>REPLACE_WITH_D1_DATABASE_ID</code>, then save that edit to GitHub.</li>
