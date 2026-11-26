@@ -1,4 +1,4 @@
-const INFO = "Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\nProject website: https://superdoge.co";
+const INFO = "Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\nProject website: https://superdoge.co\nTelegram community: https://t.me/superdogecommunity";
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 function commandOf(text = "") {
@@ -168,7 +168,7 @@ async function handleMessage(env, message) {
     }
     if (members.length) {
       const names = members.map((member) => member.first_name || "Doge fan").join(", ");
-      await say(env, chat.id, `Welcome, ${names}! 🐶🕶️\nThis is the Super Doge Community. Be kind and watch out for scams. Use /info for project details. For the temporary airdrop, message @${env.BOT_USERNAME} privately and send /airdrop.`);
+      await say(env, chat.id, `Welcome, ${names}! 🐶🕶️\nThis is the Super Doge Community: https://t.me/superdogecommunity. Be kind and watch out for scams. Use /info for project details. For the temporary airdrop, message @${env.BOT_USERNAME} privately and send /airdrop.`);
     }
     return;
   }
@@ -272,5 +272,6 @@ export default {
     await env.DB.batch(statements);
   },
 };
+
 
 
