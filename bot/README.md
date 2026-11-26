@@ -1,6 +1,6 @@
 # Super Doge Telegram bot · Cloudflare Worker
 
-The GitHub repo contains the bot backend; Cloudflare Workers runs it. Telegram hosts the “Super Doge Community” group linked to @SuperDogeAgent.
+The GitHub repo contains the bot backend; Cloudflare Workers runs it. Telegram hosts the “Super Doge Community” at https://t.me/superdogecommunity, linked to @SuperDogeAgent.
 
 The bot welcomes new members, answers `/start` and `/info`, and handles private airdrop registration. For basic anti-spam, it deletes external links posted by members during their first 24 hours (official `superdoge.co` and `t.me/SuperDogeAgent` links are allowed) and deletes messages after 8 messages in 10 seconds. It does not mute or ban members.
 
@@ -19,4 +19,5 @@ The bot welcomes new members, answers `/start` and `/info`, and handles private 
 Each listed admin should start a private chat with @SuperDogeAgent once. Any configured admin can then send `/export` privately to close intake and receive the wallet CSV. A UTC Cron Trigger deletes active D1 rows after `AIRDROP_DELETE_AFTER`; the organizer must also delete the Telegram CSV and any downloaded copies after distribution.
 
 The Worker does not verify wallet ownership, eligibility, or on-chain distribution. This starter has not been independently audited.
+
 
