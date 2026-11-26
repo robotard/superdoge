@@ -31,6 +31,60 @@ async function say(env, chatId, text) {
   return telegram(env, "sendMessage", { chat_id: chatId, text, disable_web_page_preview: true });
 }
 
+function isModerator(env, userId) {
+  const ids = [env.ADMIN_TELEGRAM_ID, ...(env.MODERATOR_IDS || "").split(",")]
+    .map((value) => Number(String(value).trim()))
+    .filter(Number.isSafeInteger);
+  return ids.includes(Number(userId));
+}
+
+function externalUrls(text) {
+  return text.match(/(?:https?:\/\/|www\.)[^\s<>()]+|(?:t\.me|telegram\.me)\/[^\s<>()]+/gi) || [];
+}
+
+function isAllowedProjectUrl(value) {
+  const cleaned = value.replace(/[.,!?;:]+$/, "");
+  const normalized = /^https?:\/\//i.test(cleaned) ? cleaned : `https://${cleaned}`;
+  try {
+    const url = new URL(normalized);
+    const host = url.hostname.toLowerCase();
+    if (host === "superdoge.co" || host === "www.superdoge.co") return true;
+    return host === "t.me" && url.pathname.replace(/\/+$/, "").toLowerCase() === "/superdogeagent";
+  } catch {
+    return false;
+  }
+}
+
+async function moderateGroupMessage(env, message) {
+  const chat = message.chat;
+  if (!chat || !["group", "supergroup"].includes(chat.type) || !message.from || message.from.is_bot || isModerator(env, message.from.id)) return;
+  const content = message.text || message.caption || "";
+  const now = Math.floor(Date.now() / 1000);
+
+  const joined = await env.DB.prepare("SELECT joined_at FROM group_members WHERE chat_id = ? AND telegram_user_id = ?")
+    .bind(chat.id, message.from.id).first();
+  const isNewMember = joined && now - joined.joined_at < 86400;
+  if (isNewMember && externalUrls(content).some((url) => !isAllowedProjectUrl(url))) {
+    await telegram(env, "deleteMessage", { chat_id: chat.id, message_id: message.message_id });
+    await say(env, chat.id, `Links are disabled for new members for their first 24 hours, ${message.from.first_name || "friend"}. Official Super Doge links are allowed.`);
+    return;
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO message_windows (chat_id, telegram_user_id, window_started_at, message_count)
+    VALUES (?, ?, ?, 1)
+    ON CONFLICT (chat_id, telegram_user_id) DO UPDATE SET
+      message_count = CASE WHEN message_windows.window_started_at >= excluded.window_started_at - 10 THEN message_windows.message_count + 1 ELSE 1 END,
+      window_started_at = CASE WHEN message_windows.window_started_at >= excluded.window_started_at - 10 THEN message_windows.window_started_at ELSE excluded.window_started_at END
+  `).bind(chat.id, message.from.id, now).run();
+  const rate = await env.DB.prepare("SELECT window_started_at, message_count FROM message_windows WHERE chat_id = ? AND telegram_user_id = ?")
+    .bind(chat.id, message.from.id).first();
+  if (rate && now - rate.window_started_at < 10 && rate.message_count > 8) {
+    await telegram(env, "deleteMessage", { chat_id: chat.id, message_id: message.message_id });
+    if (rate.message_count === 9) await say(env, chat.id, `${message.from.first_name || "Member"}, please slow down—more than 8 messages in 10 seconds is treated as flooding.`);
+  }
+}
+
 function validSolanaAddress(address) {
   if (address.length < 32 || address.length > 44) return false;
   let number = 0n;
@@ -100,8 +154,16 @@ async function handleMessage(env, message) {
   if (!message?.from || message.from.is_bot) return;
   const chat = message.chat;
   if (message.new_chat_members?.length) {
-    const name = message.new_chat_members[0].first_name || "Doge fan";
-    await say(env, chat.id, `Welcome, ${name}! 🐶🕶️\nSuper Doge ($SDOGE) project info: https://superdoge.co\nUse /info for details. Register for the temporary airdrop in a private chat with @${env.BOT_USERNAME} using /airdrop.`);
+    const members = message.new_chat_members.filter((member) => !member.is_bot);
+    const joinedAt = Math.floor(Date.now() / 1000);
+    for (const member of members) {
+      await env.DB.prepare("INSERT OR REPLACE INTO group_members (chat_id, telegram_user_id, joined_at) VALUES (?, ?, ?)")
+        .bind(chat.id, member.id, joinedAt).run();
+    }
+    if (members.length) {
+      const names = members.map((member) => member.first_name || "Doge fan").join(", ");
+      await say(env, chat.id, `Welcome, ${names}! 🐶🕶️\nThis is the Super Doge Community. Be kind and watch out for scams. Use /info for project details. For the temporary airdrop, message @${env.BOT_USERNAME} privately and send /airdrop.`);
+    }
     return;
   }
 
@@ -128,7 +190,12 @@ async function handleMessage(env, message) {
     return;
   }
 
-  if (isPrivate(message) && message.text) {
+  if (!isPrivate(message)) {
+    await moderateGroupMessage(env, message);
+    return;
+  }
+
+  if (message.text) {
     const pending = await env.DB.prepare("SELECT telegram_user_id FROM pending WHERE telegram_user_id = ?")
       .bind(message.from.id).first();
     if (!pending) {
@@ -184,12 +251,19 @@ export default {
   },
 
   async scheduled(_event, env) {
+    const statements = [
+      env.DB.prepare("DELETE FROM group_members WHERE joined_at < unixepoch() - 86400"),
+      env.DB.prepare("DELETE FROM message_windows WHERE window_started_at < unixepoch() - 60"),
+    ];
     const deleteAfter = utcDate(env.AIRDROP_DELETE_AFTER, "AIRDROP_DELETE_AFTER");
-    if (Date.now() < deleteAfter.valueOf()) return;
-    await env.DB.batch([
-      env.DB.prepare("DELETE FROM entries"),
-      env.DB.prepare("DELETE FROM pending"),
-      env.DB.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('closed', 'yes')"),
-    ]);
+    if (Date.now() >= deleteAfter.valueOf()) {
+      statements.push(
+        env.DB.prepare("DELETE FROM entries"),
+        env.DB.prepare("DELETE FROM pending"),
+        env.DB.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('closed', 'yes')"),
+      );
+    }
+    await env.DB.batch(statements);
   },
 };
+
