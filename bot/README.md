@@ -11,11 +11,12 @@ The bot welcomes new members, answers `/start` and `/info`, and handles private 
 
    `npx wrangler d1 migrations apply superdoge-airdrop --remote --config bot/wrangler.jsonc`
 
-3. Add runtime variables `BOT_USERNAME` (`SuperDogeAgent`, without `@`), `ADMIN_TELEGRAM_ID`, optional comma-separated `MODERATOR_IDS`, `AIRDROP_CLOSES_AT`, and `AIRDROP_DELETE_AFTER` in Cloudflare. Dates must include UTC (`Z`), with deletion later than closing.
+3. Add runtime variables `BOT_USERNAME` (`SuperDogeAgent`, without `@`), comma-separated `ADMIN_TELEGRAM_IDS` (all may export and bypass moderation), optional comma-separated `MODERATOR_IDS` (moderation bypass only), `AIRDROP_CLOSES_AT`, and `AIRDROP_DELETE_AFTER` in Cloudflare. Dates must include UTC (`Z`), with deletion later than closing.
 4. Add encrypted secrets `TELEGRAM_BOT_TOKEN` and `TELEGRAM_WEBHOOK_SECRET`.
-5. Add @SuperDogeAgent to the Telegram group as an admin with the **Delete messages** permission. The bot needs to see group messages for moderation. It does not need restrict/ban rights. Pin a notice with the link and flood rules.
+5. Add each human admin in Telegram group settings under **Administrators**. Add @SuperDogeAgent to the group as an admin with the **Delete messages** permission. The bot needs to see group messages for moderation. It does not need restrict/ban rights. Pin a notice with the link and flood rules.
 6. Deploy and set Telegram's webhook to `https://<worker-host>/telegram`, passing the same webhook secret as Telegram's `secret_token`.
 
-As the configured admin, send `/export` privately to close intake and receive the wallet CSV. A UTC Cron Trigger deletes active D1 rows after `AIRDROP_DELETE_AFTER`; the organizer must also delete the Telegram CSV and any downloaded copies after distribution.
+Each listed admin should start a private chat with @SuperDogeAgent once. Any configured admin can then send `/export` privately to close intake and receive the wallet CSV. A UTC Cron Trigger deletes active D1 rows after `AIRDROP_DELETE_AFTER`; the organizer must also delete the Telegram CSV and any downloaded copies after distribution.
 
 The Worker does not verify wallet ownership, eligibility, or on-chain distribution. This starter has not been independently audited.
+
