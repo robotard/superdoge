@@ -1,4 +1,5 @@
-const INFO = "Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\nProject website: https://superdoge.co\nTelegram community: https://t.me/superdogecommunity";
+const PLAN = "Our plan is simple: build a fun community around $SDOGE, share the project, and grow the pack together. We’re live on pump.fun, with an airdrop planned soon. More details coming!";
+const INFO = `Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.\n\n${PLAN}\n\nProject website: https://superdoge.co\nBuy $SDOGE: https://pump.fun/coin/DgkioUBM3Byw2SHS2344RGu8ZmczPuX2ndqMDUcVTGvJ\nTelegram community: https://t.me/superdogecommunity`;
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 function commandOf(text = "") {
@@ -168,7 +169,7 @@ async function handleMessage(env, message) {
     }
     if (members.length) {
       const names = members.map((member) => member.first_name || "Doge fan").join(", ");
-      await say(env, chat.id, `Welcome, ${names}! 🐶🕶️\nThis is the Super Doge Community: https://t.me/superdogecommunity. Be kind and watch out for scams. Use /info for project details. For the temporary airdrop, message @${env.BOT_USERNAME} privately and send /airdrop.`);
+      await say(env, chat.id, `Welcome, ${names}! 🐶🕶️\n\n${PLAN}\n\nWebsite: https://superdoge.co\nCommunity: https://t.me/superdogecommunity\n\nBe kind and watch out for scams. Use /info for project details. For the temporary airdrop, message @${env.BOT_USERNAME} privately and send /airdrop.`);
     }
     return;
   }
