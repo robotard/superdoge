@@ -32,7 +32,7 @@ async function say(env, chatId, text) {
 }
 
 function configuredIds(value) {
-  return String(value || "").split(",").map((part) => Number(part.trim())).filter(Number.isSafeInteger);
+  return String(value || "").split(",").map((part) => part.trim()).filter(Boolean).map(Number).filter(Number.isSafeInteger);
 }
 
 function adminIds(env) {
