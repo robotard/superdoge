@@ -31,10 +31,17 @@ async function say(env, chatId, text) {
   return telegram(env, "sendMessage", { chat_id: chatId, text, disable_web_page_preview: true });
 }
 
+function configuredIds(value) {
+  return String(value || "").split(",").map((part) => Number(part.trim())).filter(Number.isSafeInteger);
+}
+
+function adminIds(env) {
+  // Keep ADMIN_TELEGRAM_ID as a backwards-compatible fallback for an existing single-admin setup.
+  return configuredIds(env.ADMIN_TELEGRAM_IDS || env.ADMIN_TELEGRAM_ID);
+}
+
 function isModerator(env, userId) {
-  const ids = [env.ADMIN_TELEGRAM_ID, ...(env.MODERATOR_IDS || "").split(",")]
-    .map((value) => Number(String(value).trim()))
-    .filter(Number.isSafeInteger);
+  const ids = [...adminIds(env), ...configuredIds(env.MODERATOR_IDS)];
   return ids.includes(Number(userId));
 }
 
@@ -133,8 +140,7 @@ function csvCell(value) {
 }
 
 async function exportEntries(env, message) {
-  const adminId = Number(env.ADMIN_TELEGRAM_ID);
-  if (!isPrivate(message) || !Number.isSafeInteger(adminId) || message.from.id !== adminId) {
+  if (!isPrivate(message) || !adminIds(env).includes(Number(message.from.id))) {
     await say(env, message.chat.id, "That admin command is restricted.");
     return;
   }
@@ -266,4 +272,5 @@ export default {
     await env.DB.batch(statements);
   },
 };
+
 
