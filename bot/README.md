@@ -2,7 +2,7 @@
 
 The GitHub repo contains the bot backend; Cloudflare Workers runs it. Telegram hosts the “Super Doge Community” at https://t.me/superdogecommunity, linked to @SuperDogeAgent.
 
-The bot welcomes new members, answers `/start` and `/info`, and handles private airdrop registration. For basic anti-spam, it deletes external links posted by members during their first 24 hours (official `superdoge.co` and `t.me/SuperDogeAgent` links are allowed) and deletes messages after 8 messages in 10 seconds. It does not mute or ban members.
+The bot welcomes new members with the Super Doge plan and project links, answers `/start` and `/info`, and handles private airdrop registration. For basic anti-spam, it deletes external links posted by members during their first 24 hours (official `superdoge.co` and `t.me/SuperDogeAgent` links are allowed) and deletes messages after 8 messages in 10 seconds. It does not mute or ban members.
 
 ## Configure
 
