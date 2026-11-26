@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Simple setup guide for the Super Doge Telegram bot and community chat.">
+<title>Super Doge | Bot & Community Setup</title>
+<style>
+:root{color-scheme:dark;--bg:#1d0f45;--panel:#2c1770;--ink:#fff3e0;--muted:#cdbcf7;--orange:#ff9a2e;--pink:#ff5caa;--line:#ffffff2b;--green:#b8efb0}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 86% 4%,#5b2380 0,transparent 32rem),var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}.wrap{width:min(100% - 32px,900px);margin:auto}header{padding:38px 0 22px}a{color:var(--orange)}.brand{font-size:14px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--pink)}h1,h2,h3{line-height:1.12}h1{font-size:clamp(2.4rem,8vw,4.7rem);margin:.4rem 0;color:var(--orange)}h2{font-size:clamp(1.65rem,5vw,2.3rem);margin:0 0 8px}h3{margin:0 0 6px;font-size:1.23rem}p{margin:.55rem 0 1rem}.lead{font-size:1.18rem;max-width:670px;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin:4px 4px 0 0;font-size:.86rem;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}.card,section{background:#ffffff0b;border:1px solid var(--line);border-radius:22px;padding:22px;margin:16px 0}.card p,li{color:var(--muted)}.card strong,li strong{color:var(--ink)}ol,ul{padding-left:24px}li{margin:8px 0}.callout{background:#ff9a2e16;border:1px solid #ff9a2e77;border-radius:16px;padding:16px;margin:14px 0}.callout b{color:var(--orange)}.safe{background:#8dde8b12;border-color:#8dde8b66}.safe b{color:var(--green)}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}code{overflow-wrap:anywhere;color:#ffd49d}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#110a2b;padding:15px;border-radius:14px;color:#ffe1bd;font-size:.88rem}button{background:var(--orange);color:#2a1666;font-size:.93rem;font-weight:800;padding:9px 14px;border:0;border-radius:999px;cursor:pointer}button:hover{filter:brightness(1.08)}.steps{counter-reset:step;list-style:none;padding:0}.steps li{counter-increment:step;position:relative;padding-left:52px;margin:16px 0}.steps li:before{content:counter(step);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--pink);color:white;font-weight:900}.small{font-size:.9rem;color:var(--muted)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.actions a{display:inline-block;background:var(--orange);color:#2a1666;text-decoration:none;padding:11px 16px;border-radius:999px;font-weight:850}.actions a.secondary{background:transparent;border:1px solid var(--line);color:var(--ink)}footer{padding:22px 0 44px;color:var(--muted);font-size:.9rem}.status{color:var(--green);font-weight:800}@media(max-width:650px){.grid{grid-template-columns:1fr}.card,section{padding:18px}}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+<div class="brand">Super Doge · $SDOGE</div>
+<h1>Bot + community,<br>made simple.</h1>
+<p class="lead">A friendly Telegram front door for Super Doge: the bot answers basic questions, welcomes people into the group, and privately collects temporary airdrop wallet addresses.</p>
+<span class="pill">Website: superdoge.co</span><span class="pill">Bot backend: Cloudflare Worker</span><span class="pill">Address list: Cloudflare D1</span>
+<div class="actions"><a href="https://superdoge.co" target="_blank" rel="noopener">Visit superdoge.co</a><a class="secondary" href="https://github.com/robotard/superdoge" target="_blank" rel="noopener">Open the GitHub repo</a></div>
+</header>
+<div class="callout"><b>What this page is:</b> a step-by-step launch guide. Your existing homepage stays at the root. This guide is a separate page at <code>/setup/</code>. The bot files live in <code>/bot/</code> and deploy as a separate Cloudflare Worker.</div>
+<div class="grid">
+<div class="card"><h3>1 · Create the Telegram bot</h3><p>In Telegram, message <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>. Send <code>/newbot</code>, choose a name such as <strong>Super Doge</strong>, then choose a username ending in <code>bot</code>. Save the token privately; never put it in GitHub.</p></div>
+<div class="card"><h3>2 · Create the group</h3><p>In Telegram, create a group such as <strong>Super Doge Community</strong>. Add your bot as a member. Keep Telegram's default group privacy on; it can respond to commands and welcome messages without reading ordinary chat.</p></div>
+</div>
+<section>
+<h2>Part A · Add the files to GitHub</h2>
+<ol class="steps">
+<li>Open <a href="https://github.com/robotard/superdoge" target="_blank" rel="noopener">robotard/superdoge</a> and add the supplied <code>setup/index.html</code> and <code>bot/</code> folder. Keep the current root <code>index.html</code>; this guide is a new subpage.</li>
+<li>Once Cloudflare Pages finishes its normal GitHub deployment, open <code>https://superdoge.co/setup/</code>. If your Pages project uses a custom build-output folder, place <code>setup/index.html</code> inside that published folder instead.</li>
+<li>From the repo folder, sign in with <code>npx wrangler login</code>. Then create a D1 database for the address list. It prints an ID; copy that ID into <code>bot/wrangler.jsonc</code> in place of <code>REPLACE_WITH_D1_DATABASE_ID</code>. The config already connects that database to the Worker as <code>DB</code>.</li>
+</ol>
+<pre id="dbcmd">npx wrangler login
+npx wrangler d1 create superdoge-airdrop</pre><button data-copy="dbcmd">Copy commands</button>
+<p class="small">The D1 database holds the submitted wallet addresses until the configured deletion date. You can use Cloudflare’s terminal or your own Mac Terminal with Node.js available.</p>
+</section>
+<section>
+<h2>Part B · Connect the Worker</h2>
+<ol class="steps">
+<li>In Cloudflare, go to <strong>Workers & Pages → Create → Worker</strong>. Connect the same GitHub repo. Set the Worker root directory to <code>bot</code> and the deploy command to <code>npx wrangler deploy</code>. Name the Worker <code>superdoge-airdrop-bot</code>.</li>
+<li>Set these runtime variables in the Worker’s <strong>Settings → Variables and Secrets</strong> area. Use UTC timestamps in ISO format. Get your numeric Telegram ID from <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>.</li>
+</ol>
+<div class="grid">
+<div class="card"><h3>Variables</h3><ul><li><code>BOT_USERNAME</code> — bot username, without <code>@</code></li><li><code>ADMIN_TELEGRAM_ID</code> — your numeric Telegram ID</li><li><code>AIRDROP_CLOSES_AT</code> — e.g. <code>2026-12-31T23:59:00Z</code></li><li><code>AIRDROP_DELETE_AFTER</code> — later UTC date, e.g. <code>2027-01-31T23:59:00Z</code></li></ul></div>
+<div class="card"><h3>Encrypted secrets</h3><ul><li><code>TELEGRAM_BOT_TOKEN</code> — the token from BotFather</li><li><code>TELEGRAM_WEBHOOK_SECRET</code> — make a long random value, such as output from <code>openssl rand -hex 32</code></li></ul><p class="small">Use Cloudflare’s secret fields. Never commit these values to GitHub or put them in this HTML page.</p></div>
+</div>
+<ol class="steps" start="4">
+<li>Apply the supplied database migration from the repo folder, then deploy the Worker once. Cloudflare Git builds can handle later updates from GitHub pushes.</li>
+</ol>
+<pre id="migrate">npx wrangler d1 migrations apply superdoge-airdrop --remote --config bot/wrangler.jsonc
+npx wrangler deploy --config bot/wrangler.jsonc</pre><button data-copy="migrate">Copy commands</button>
+<p>Visit the Worker’s <code>/health</code> address once it is deployed; it should say <span class="status">Super Doge bot is ready.</span></p>
+</section>
+<section>
+<h2>Part C · Point Telegram at the Worker</h2>
+<p>Telegram sends bot updates to the Worker using a webhook. In Terminal, paste this block, replacing the three values. Use the exact webhook secret saved in Cloudflare.</p>
+<pre id="webhook">read -s "TG_TOKEN?Paste BotFather token: "; echo
+read -s "HOOK_SECRET?Paste webhook secret: "; echo
+WORKER_URL="https://superdoge-airdrop-bot.YOUR-SUBDOMAIN.workers.dev"
+curl -sS -X POST "https://api.telegram.org/bot${TG_TOKEN}/setWebhook" \\
+  --data-urlencode "url=${WORKER_URL}/telegram" \\
+  --data-urlencode "secret_token=${HOOK_SECRET}"
+unset TG_TOKEN HOOK_SECRET</pre><button data-copy="webhook">Copy webhook setup</button>
+<p class="small">Replace <code>YOUR-SUBDOMAIN</code> with the Cloudflare Workers URL shown on your Worker page. The token is entered silently in Terminal and is not part of the copied repo files.</p>
+</section>
+<section>
+<h2>Part D · Set up the group</h2>
+<ol class="steps">
+<li>In <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>, use <code>/setjoingroups</code> to allow the bot in groups. Leave privacy mode enabled for this info-and-welcome setup.</li>
+<li>Add the bot to <strong>Super Doge Community</strong>. Make it a group admin only if you want it to moderate or manage group settings; basic welcomes and slash-command replies need fewer permissions.</li>
+<li>In BotFather, use <code>/setcommands</code> and enter:<pre>start - Welcome and Super Doge links
+info - Super Doge project information
+airdrop - Private temporary airdrop registration
+cancel - Cancel wallet registration
+export - Close intake and send admin CSV</pre></li>
+<li>Test in the group with <code>/start</code>, <code>/info</code>, and <code>/airdrop</code>. Then open a private chat with the bot and use <code>/airdrop</code> to test address intake. Never test with a real seed phrase or private key.</li>
+</ol>
+<div class="callout safe"><b>Keep addresses private.</b> The bot directs group members to private chat for registration. It does not verify wallet ownership or promise eligibility or an airdrop allocation.</div>
+</section>
+<section>
+<h2>How to run the airdrop batch</h2>
+<ol><li>Before the closing time, review your published eligibility rules and privacy wording.</li><li>As the configured admin, send <code>/export</code> to the bot in a private chat. This closes registration and sends a CSV of unique wallets to that admin Telegram account.</li><li>Use the CSV with your distribution process. The Worker deletes its D1 entries after the configured deletion time; delete the CSV message/download and any other copies after distribution too.</li></ol>
+<div class="callout"><b>Before inviting the public:</b> replace the example dates, publish your actual eligibility and privacy details, confirm the Worker has a D1 binding and webhook, and test with a throwaway wallet. Telegram may retain the exported document in the admin chat until you delete it.</div>
+</section>
+<footer><p><strong>Built for the current Super Doge repo.</strong> This page lives at <code>/setup/</code>; the current homepage is not overwritten. The backend is a separate Cloudflare Worker configured from <code>/bot/</code>.</p><p>Project description: Super Doge ($SDOGE) is a Solana meme coin with a Shiba mascot in pixel sunglasses, built around a fair launch and a community-first approach.</p></footer>
+</div>
+<script>document.querySelectorAll("button[data-copy]").forEach(button=>button.addEventListener("click",async()=>{const text=document.getElementById(button.dataset.copy).innerText;try{await navigator.clipboard.writeText(text);const old=button.innerText;button.innerText="Copied!";setTimeout(()=>button.innerText=old,1200)}catch{button.innerText="Select and copy"}}));</script>
+</body></html>
